@@ -9,16 +9,17 @@ import com.example.springrestapi.repository.EmployeeRepository;
 import com.example.springrestapi.service.DepartmentService;
 
 
+
 @RestController
 public class DepartmentController {
   
-	@Autowired	
+	@Autowired
 	private DepartmentService dService;
 	
 	@Autowired
 	private DepartmentRepository dRepo;
 	
-	@Autowired
+	@Autowired(required=true)
 	private DepartmentDAOImplementation eDAO;
 	
 	@Autowired

@@ -1,3 +1,4 @@
+
 package com.example.springrestapi.service;
 
 import java.util.ArrayList;
@@ -19,6 +20,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private EmployeeRepository eRepository;
 
+	
+	@Override
+	public Employee createEmployee(Employee employee) {
+		
+		return eRepository.save(employee);
+	}
 	
 //	public Employee findByName(String name) {
 //       
@@ -52,7 +59,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 	
 	@Override
-	public Object deleteEmployee(Long id) {
+	public void deleteEmployee(Long id) {
 		return eRepository.deleteById(id);
 	}
 
@@ -92,5 +99,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	
 	
 }

@@ -17,14 +17,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.example.springrestapi.config.JwtProvider;
 import com.example.springrestapi.dao.EmployeeDAOImplementation;
+import com.example.springrestapi.exception.EmployeeException;
 import com.example.springrestapi.model.Department;
 import com.example.springrestapi.model.Employee;
 import com.example.springrestapi.repository.DepartmentRepository;
 import com.example.springrestapi.repository.EmployeeRepository;
 import com.example.springrestapi.request.EmployeeRequest;
+import com.example.springrestapi.response.AuthResponse;
 import com.example.springrestapi.service.EmployeeService;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 import jakarta.validation.Valid;
 
@@ -40,11 +46,52 @@ public class EmployeeController {
 	private EmployeeRepository eRepo;
 	
 	@Autowired
+	private JwtProvider jwtProvider;
+	
+	@Autowired
 	private EmployeeDAOImplementation eDAO;
 	
 	@Autowired
 	private DepartmentRepository dRepo;	
 	
+	
+	@PostMapping("/employees/create")
+	public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee){
+		
+		String name = employee.getName();
+		Long age = employee.getAge();
+		String location = employee.getLocation();
+		String email = employee.getEmail();
+		String department = employee.getDepartment();
+		
+		Employee isEmailExist = eRepo.findByEmail(email);
+		
+		   if(isEmailExist != null) {
+			   throw new EmployeeException("Email is Already Used");
+		   }
+		
+		   Employee createdEmployee = new Employee();
+		   createdEmployee.setName(name);
+		   createdEmployee.setAge(age);
+		   createdEmployee.setLocation(location);
+		   createdEmployee.setEmail(email);
+		   createdEmployee.setDepartment(department);
+		   
+		   Employee savedEmployee = eRepo.save(createdEmployee);
+		   
+		   
+		   Authentication authentication = new UsernamePasswordAuthenticationToken(savedEmployee.getEmail(),
+				   savedEmployee.getPassword());
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+
+			String token = jwtProvider.generateToken(authentication);
+
+			AuthResponse authResponse = new AuthResponse(token, token);
+			authResponse.setJwt(token);
+			authResponse.setMessage("Employee Created Successfully");
+		
+		return new ResponseEntity<Employee>(eService.createEmployee(employee), HttpStatus.CREATED);
+	}
 	
    @GetMapping("/employees")
    public ResponseEntity<List<Employee>> getEmployees(@RequestParam int pageNumber, @RequestParam int pageSize) {

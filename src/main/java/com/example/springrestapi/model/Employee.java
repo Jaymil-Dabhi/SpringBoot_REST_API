@@ -43,9 +43,9 @@ public class Employee {
    @NotBlank(message= "Name should not be null")
    private String name;
    
-   @OneToOne
-   @JoinColumn(name="department_id")
-   private @NotBlank(message = "department should not be null") String department;
+//   @OneToOne
+//   @JoinColumn(name="department_id")
+//   private @NotBlank(message = "department should not be null") String department;
    
    @OneToMany(mappedBy = "employee")
    private List<Department> departments;
@@ -54,12 +54,14 @@ public class Employee {
    
    private String location;
    
+   private String password;
+   
    @Email(message= "Please enter the valid email address")
    private String email;
    
-//   @NotBlank(message= "department should not be null")
-//   @Column(name = "department")
-//   private String department;
+   @NotBlank(message= "department should not be null")
+   @Column(name = "department")
+   private String department;
    
    @CreatationTimestamp
    @Column(name="created_at", nullable = false, updatable = false)
@@ -77,17 +79,21 @@ public class Employee {
 	   
    }
 
-public Employee(Long id, @NotBlank(message = "Name should not be null") String name, List<Department> departments,
-		Long age, String location, @Email(message = "Please enter the valid email address") String email,
-		@NotBlank(message = "department should not be null") String department, Date createdAt, Date updatedAt) {
+
+
+public Employee(Long id, @NotBlank(message = "Name should not be null") String name,
+		@NotBlank(message = "department should not be null") String department, List<Department> departments, Long age,
+		String location, String password, @Email(message = "Please enter the valid email address") String email,
+		Date createdAt, Date updatedAt) {
 	super();
 	this.id = id;
 	this.name = name;
+	this.department = department;
 	this.departments = departments;
 	this.age = age;
 	this.location = location;
+	this.password = password;
 	this.email = email;
-	this.department = department;
 	this.createdAt = createdAt;
 	this.updatedAt = updatedAt;
 }
@@ -170,6 +176,14 @@ public Date getUpdatedAt() {
 
 public void setUpdatedAt(Date updatedAt) {
 	this.updatedAt = updatedAt;
+}
+
+public String getPassword() {
+	return password;
+}
+
+public void setPassword(String password) {
+	this.password = password;
 }
 
 

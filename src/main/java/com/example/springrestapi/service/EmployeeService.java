@@ -5,6 +5,8 @@ import java.util.List;
 import com.example.springrestapi.model.Employee;
 
 public interface EmployeeService {
+	
+	Employee createEmployee(Employee employee);
    
 	List<Employee> getEmployees(int pageNumber, int pageSize);
 	

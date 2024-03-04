@@ -1,37 +1,39 @@
 package com.example.springrestapi.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.springrestapi.model.Employee;
 
 @Repository
-public interface EmployeeRepository extends PagingAndSortingRepository<Employee, Long> {
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	
      List<Employee> findByName(String name);
      
      
      @Query("SELECT e FROM Employee e WHERE e.department = :department")
-     List<Employee> findByDepartmentName(String name);
+     List<Employee> findByDepartmentName(@Param("department") Optional<String> department);
      
-     @Query("FROM Employee WHERE department.name = :name")
-     List<Employee> getEmployeesByDeptName(String name);
+     @Query("SELECT e FROM Employee e WHERE e.department = :department")
+     List<Employee> getEmployeesByDeptName(@Param("department") String department);
      
      // SELECT * FROM table WHERE name="test" AND location="india"
-     List<Employee> findByNameAndLocation(String name, String location);
+     List<Employee> findByNameAndLocation(@Param("name") String name, @Param("location") String location);
      
      // SELECT * FROM table WHERE name LIKE "%ram%"
      List<Employee> findByNameContaining(String keyword, Sort sort);
      
-     @Query("FROM Employee WHERE name = :name OR Location = :location")
-     List<Employee> getEmployeesByNameOrLocation(String name, String location);
+     @Query("SELECT e FROM Employee e WHERE e.name = :name OR e.location = :location")
+     List<Employee> getEmployeesByNameOrLocation(@Param("name") String name, @Param("location") String location);
      
 //     @Query(value = "select * from tbl_employee" nativeQuery = true)
 //     List<Employee> getEmployees();
@@ -43,10 +45,12 @@ public interface EmployeeRepository extends PagingAndSortingRepository<Employee,
      @Query("DELETE FROM Employee WHERE name = :name")
      Integer deleteEmployeeByName(String name);
      
-     Employee findById(Long id);
+     Optional<Employee> findById(Long id);
+     
+     Employee findByEmail(String email);
 
 	Employee save(Employee employee);
 
-	Object deleteById(Long id);
+	void deleteById(Long id);
      
 }
