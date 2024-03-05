@@ -1,6 +1,7 @@
 package com.example.springrestapi.model;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.springrestapi.request.EmployeeRequest;
@@ -64,12 +65,12 @@ public class Employee {
    private String department;
    
    @CreatationTimestamp
-   @Column(name="created_at", nullable = false, updatable = false)
-   private Date createdAt;
+   @Column(name="created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+   private LocalDateTime createdAt;
    
    @UpdationTimestamp
    @Column(name="updated_at")
-   private Date updatedAt;
+   private LocalDateTime updatedAt;
    
    public Employee(EmployeeRequest req) {
 	   this.name = req.getName();
@@ -84,7 +85,7 @@ public class Employee {
 public Employee(Long id, @NotBlank(message = "Name should not be null") String name,
 		@NotBlank(message = "department should not be null") String department, List<Department> departments, Long age,
 		String location, String password, @Email(message = "Please enter the valid email address") String email,
-		Date createdAt, Date updatedAt) {
+		LocalDateTime createdAt, LocalDateTime updatedAt) {
 	super();
 	this.id = id;
 	this.name = name;
@@ -162,19 +163,19 @@ public void setDepartment(String department) {
 	this.department = department;
 }
 
-public Date getCreatedAt() {
+public LocalDateTime getCreatedAt() {
 	return createdAt;
 }
 
-public void setCreatedAt(Date createdAt) {
+public void setCreatedAt(LocalDateTime createdAt) {
 	this.createdAt = createdAt;
 }
 
-public Date getUpdatedAt() {
+public LocalDateTime getUpdatedAt() {
 	return updatedAt;
 }
 
-public void setUpdatedAt(Date updatedAt) {
+public void setUpdatedAt(LocalDateTime updatedAt) {
 	this.updatedAt = updatedAt;
 }
 

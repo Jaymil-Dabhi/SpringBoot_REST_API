@@ -4,10 +4,13 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import com.example.config.Authentication;
-import com.example.config.Claims;
-import com.example.config.JwtConstant;
-import com.example.config.Service;
+import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
+
+import io.jsonwebtoken.Claims;	
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
 
 @Service
 public class JwtProvider {

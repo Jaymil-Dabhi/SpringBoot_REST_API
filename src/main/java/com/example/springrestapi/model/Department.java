@@ -6,9 +6,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -17,6 +20,9 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name="tbl_department")
+@NoArgsConstructor
+@NamedNativeQuery(name="getAllDepartments", query="select * from tbl_department", resultClass = Department.class)
+@NamedQuery(name="Department.getAllDepartments", query="FROM Department")
 public class Department {
 	
 	@Id
@@ -65,6 +71,15 @@ public Employee getEmployee() {
 
 public void setEmployee(Employee employee) {
 	this.employee = employee;
+}
+
+public Employee getEmployees() {
+	   return employee;
+}
+
+public void setEmployees(Employee emp) {
+	// TODO Auto-generated method stub
+	
 }
    
    

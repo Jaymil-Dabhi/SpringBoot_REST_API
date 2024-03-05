@@ -14,6 +14,8 @@ public interface EmployeeService {
 	
 	Employee getSingleEmployee (Long id);
 	
+	Employee getEmployeeByDptId(Long id);
+	
 	Object deleteEmployee(Long id);
 	
 //	Employee findByName(String name);
@@ -31,4 +33,6 @@ public interface EmployeeService {
 	Integer deleteEmployeeByName(String name);
 
 	Integer deleteEmployeeName(String name);
+	
+	
 }

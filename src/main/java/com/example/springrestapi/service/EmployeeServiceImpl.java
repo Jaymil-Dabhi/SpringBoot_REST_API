@@ -51,9 +51,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 	
 	@Override
 	public Employee getSingleEmployee(Long id) {  
-		Optional<Employee> employee = Optional.of(eRepository.findById(id));
+		Employee employee = new Employee();
 		if(employee.isPresent()) {
-			return employee.get();
+			return employee.getId();
 		}
 		throw new RuntimeException("Employee is not found for the id "+id);
 	}
@@ -98,6 +98,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public Integer deleteEmployeeByName(String name) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Employee getEmployeeByDptId(Long id) {
+		// TODO Auto-generated method stub
+		return (Employee) eRepository.getEmployeesByDeptId(id);
 	}
 
 	

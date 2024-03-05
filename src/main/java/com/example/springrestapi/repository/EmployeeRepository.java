@@ -23,8 +23,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
      @Query("SELECT e FROM Employee e WHERE e.department = :department")
      List<Employee> findByDepartmentName(@Param("department") Optional<String> department);
      
-     @Query("SELECT e FROM Employee e WHERE e.department = :department")
-     List<Employee> getEmployeesByDeptName(@Param("department") String department);
+     @Query("SELECT e FROM Employee e WHERE e.department = :id")
+     List<Employee> getEmployeesByDeptId(@Param("id") Long id);
      
      // SELECT * FROM table WHERE name="test" AND location="india"
      List<Employee> findByNameAndLocation(@Param("name") String name, @Param("location") String location);
