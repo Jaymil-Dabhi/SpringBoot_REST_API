@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public List<Employee> getEmployees(int pageNumber, int pageSize) {
-		PageRequest pages = PageRequest.of(pageNumber, pageSize, Direction.DESC, "id");
+		Pageable pages = PageRequest.of(pageNumber, pageSize);
 		return eRepository.findAll(pages).getContent();
 	}
 	
@@ -51,16 +52,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 	
 	@Override
 	public Employee getSingleEmployee(Long id) {  
-		Employee employee = new Employee();
-		if(employee.isPresent()) {
-			return employee.getId();
-		}
-		throw new RuntimeException("Employee is not found for the id "+id);
+		Optional<Employee> employee = eRepository.findById(id);
+
+	    if (employee.isPresent()) {
+	        return employee.get();
+	    }
+
+	    throw new RuntimeException("Employee is not found for the id " + id);
 	}
 	
 	@Override
 	public void deleteEmployee(Long id) {
-		return eRepository.deleteById(id);
+	      eRepository.deleteById(id);
 	}
 
 	@Override
@@ -101,9 +104,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Employee getEmployeeByDptId(Long id) {
+	public List<Employee> getEmployeesByDptId(Long departmentId) {
 		// TODO Auto-generated method stub
-		return (Employee) eRepository.getEmployeesByDeptId(id);
+		return eRepository.getEmployeesByDptId(departmentId);
 	}
 
 	

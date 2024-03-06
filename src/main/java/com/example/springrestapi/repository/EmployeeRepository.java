@@ -20,13 +20,16 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
      List<Employee> findByName(String name);
      
      
-     @Query("SELECT e FROM Employee e WHERE e.department = :department")
-     List<Employee> findByDepartmentName(@Param("department") Optional<String> department);
+//     @Query("SELECT e FROM Employee e WHERE e.department = :department")
+     List<Employee> findByDepartmentName(String department);
      
-     @Query("SELECT e FROM Employee e WHERE e.department = :id")
-     List<Employee> getEmployeesByDeptId(@Param("id") Long id);
+     @Query("FROM Employee WHERE department.name = :name")
+     List<Employee> getEmployeesByDeptName(String name);
      
-     // SELECT * FROM table WHERE name="test" AND location="india"
+     @Query("SELECT e FROM Employee e WHERE e.department.id = :departmentId")
+     List<Employee> getEmployeesByDptId(@Param("departmentId") Long departmentId);
+     
+     // SELECT * FROM table WHERE name="test" AND location="India"
      List<Employee> findByNameAndLocation(@Param("name") String name, @Param("location") String location);
      
      // SELECT * FROM table WHERE name LIKE "%ram%"
@@ -35,8 +38,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
      @Query("SELECT e FROM Employee e WHERE e.name = :name OR e.location = :location")
      List<Employee> getEmployeesByNameOrLocation(@Param("name") String name, @Param("location") String location);
      
-//     @Query(value = "select * from tbl_employee" nativeQuery = true)
-//     List<Employee> getEmployees();
+    // @Query(value = "select * from tbl_employee" nativeQuery = true)
+     List<Employee> getEmployees();
      
      List<Employee> getAllRecords();
      
@@ -45,6 +48,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
      @Query("DELETE FROM Employee WHERE name = :name")
      Integer deleteEmployeeByName(String name);
      
+     @Query("SELECT e.id FROM Employee e WHERE e.id = :id")
+     Long findEmployeeById(@Param("id") Long id);
+     
      Optional<Employee> findById(Long id);
      
      Employee findByEmail(String email);
@@ -52,5 +58,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	Employee save(Employee employee);
 
 	void deleteById(Long id);
+
+
+//	List<Employee> findByDepartmentId(Long departmentId);
+
+//	@Query("SELECT e FROM Employee e WHERE e.department.id = :departmentId")
+//	List<Employee> getEmployeesByDeptId(Long departmentId);
      
 }

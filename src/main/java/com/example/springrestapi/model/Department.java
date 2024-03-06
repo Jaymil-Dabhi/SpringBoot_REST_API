@@ -1,5 +1,7 @@
 package com.example.springrestapi.model;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -36,18 +40,21 @@ public class Department {
    @JoinColumn(name = "employee_id")
    private Employee employee;
    
+   @OneToMany(mappedBy = "department")
+   private List<Employee> employees;
+   
   public Department() {
 	  
   }
-   
 
-public Department(Long id, @NotBlank(message = "Name should not be null") String name, Employee employee) {
+public Department(Long id, @NotBlank(message = "Name should not be null") String name, Employee employee,
+		List<Employee> employees) {
 	super();
 	this.id = id;
 	this.name = name;
 	this.employee = employee;
+	this.employees = employees;
 }
-
 
 public Long getId() {
 	return id;
@@ -73,15 +80,14 @@ public void setEmployee(Employee employee) {
 	this.employee = employee;
 }
 
-public Employee getEmployees() {
-	   return employee;
+public List<Employee> getEmployees() {
+	return employees;
 }
 
-public void setEmployees(Employee emp) {
-	// TODO Auto-generated method stub
-	
+public void setEmployees(List<Employee> employees) {
+	this.employees = employees;
 }
-   
-   
-   
+
+
+
 }

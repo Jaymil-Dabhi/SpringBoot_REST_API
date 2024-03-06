@@ -1,5 +1,6 @@
 package com.example.springrestapi.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.example.springrestapi.model.Employee;
 import com.example.springrestapi.repository.DepartmentRepository;
 import com.example.springrestapi.repository.EmployeeRepository;
 import com.example.springrestapi.request.DepartmentRequest;
+import com.example.springrestapi.response.DepartmentResponse;
 import com.example.springrestapi.service.DepartmentService;
 
 import jakarta.validation.Valid;
@@ -41,17 +43,32 @@ public class DepartmentController {
 	@PostMapping("/department/create")
 	public ResponseEntity<Department> createDepartment(@RequestBody Department department){
 		String name = department.getName();
-		Employee employee_id = department.getEmployee();
+		List<Employee> employee = department.getEmployees();
 		
 		Department saveDepartment = dRepo.save(department);
 		
 		return new ResponseEntity<Department>(dService.createDepartment(department),HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/departments/all")
-	public ResponseEntity<List<Department>>getDepartments(){
-		return new ResponseEntity<List<Department>>(dService.getDepartments(), HttpStatus.OK);
+	@GetMapping("/departments")
+	public List<DepartmentResponse> getDepartments(){
+		List<Department> depts = dRepo.findAll();
+		List<DepartmentResponse> list = new ArrayList<>();
+		depts.forEach(d -> {
+			DepartmentResponse dResponse = new DepartmentResponse();
+			dResponse.setDepartmentName(d.getName());
+			dResponse.setId(d.getId());
+			dResponse.setEmployeeName(((Department) d.getEmployees()).getName());
+			list.add(dResponse);
+		});
+		return list;
 	}
+	
+	
+//	@GetMapping("/departments/all")
+//	public ResponseEntity<List<Department>>getDepartments(){
+//		return new ResponseEntity<List<Department>>(dService.getDepartments(), HttpStatus.OK);
+//	}
 	
 	public ResponseEntity<Department>getDepartmentById(@PathVariable Long id){
 		return new ResponseEntity<Department>(HttpStatus.OK);

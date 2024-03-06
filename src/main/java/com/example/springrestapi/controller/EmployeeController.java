@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import com.example.springrestapi.repository.DepartmentRepository;
 import com.example.springrestapi.repository.EmployeeRepository;
 import com.example.springrestapi.request.EmployeeRequest;
 import com.example.springrestapi.response.AuthResponse;
+import com.example.springrestapi.response.EmployeeResponse;
 import com.example.springrestapi.service.EmployeeService;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,16 +60,15 @@ public class EmployeeController {
 	private DepartmentRepository dRepo;
 
 	@PostMapping("/employees/create")
-	public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) throws EmployeeException {
+	public ResponseEntity<AuthResponse> createEmployee(@RequestBody Employee employee) throws EmployeeException {
 
 		String name = employee.getName();
 		Long age = employee.getAge();
 		String location = employee.getLocation();
 		String email = employee.getEmail();
-		String department = employee.getDepartment();
+		String departmentName = employee.getDepartmentName();
 		String password = employee.getPassword();
-		LocalDateTime created_at = employee.getCreatedAt();
-		LocalDateTime updated_at = employee.getUpdatedAt();
+		
 		
 		Employee isEmailExist = eRepo.findByEmail(email);
 
@@ -80,12 +81,12 @@ public class EmployeeController {
 		createdEmployee.setAge(age);
 		createdEmployee.setLocation(location);
 		createdEmployee.setEmail(email);
-		createdEmployee.setDepartment(department);
+		createdEmployee.setDepartmentName(departmentName);
 		createdEmployee.setPassword(password);
-		createdEmployee.setCreatedAt(created_at);
-		createdEmployee.setUpdatedAt(updated_at);
+		
 
 		Employee savedEmployee = eRepo.save(createdEmployee);
+		System.out.print(savedEmployee);
 
 		Authentication authentication = new UsernamePasswordAuthenticationToken(savedEmployee.getEmail(),
 				savedEmployee.getPassword());
@@ -93,44 +94,62 @@ public class EmployeeController {
 
 		String token = jwtProvider.generateToken(authentication);
 
-		AuthResponse authResponse = new AuthResponse(token, token);
-		authResponse.setJwt(token);
+		AuthResponse authResponse = new AuthResponse(token, "Bearer " + token);
+//		authResponse.setJwt(token);
 		authResponse.setMessage("Employee Created Successfully");
 
-		return new ResponseEntity<Employee>(eService.createEmployee(employee), HttpStatus.CREATED);
+		return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/employees/paged")
 	public ResponseEntity<List<Employee>> getEmployees(
-			@RequestParam(required = false, defaultValue = "0") int pageNumber,
-			@RequestParam(required = false, defaultValue = "5") int pageSize){
+			@RequestParam Integer pageNumber,
+			@RequestParam Integer pageSize){
 		return new ResponseEntity<List<Employee>>(eService.getEmployees(pageNumber, pageSize), HttpStatus.OK);
 	}
+	
+//	@GetMapping("/employees")
+//	public ResponseEntity<List<EmployeeResponse>> getEmployees(){
+//		List<Employee> list = eRepo.findAll();
+//		List<EmployeeResponse> responseList = new ArrayList<>();
+//		list.forEach(e -> {
+//			EmployeeResponse eResponse = new EmployeeResponse();
+//			eResponse.setId(e.getId());
+//			eResponse.setEmployeeName(e.getName());
+//			List<String> depts = new ArrayList<>();
+//			for(Department d : e.getDepartments()) {
+//				depts.add(d.getName());
+//			}
+//			eResponse.setDepartment(depts);
+//			responseList.add(eResponse);
+//		});
+//		return new ResponseEntity<List<EmployeeResponse>>(responseList, HttpStatus.OK);
+//	}
 
 	@GetMapping("/employees/{id}")
-	public ResponseEntity<Employee> getEmployeeById(@PathVariable long id) {
-		return new ResponseEntity<>(eService.getSingleEmployee(id), HttpStatus.OK);
+	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+		return new ResponseEntity<Employee>(eService.getSingleEmployee(id), HttpStatus.OK);
 	}
 
 	@PostMapping("/employees/save")
-	public ResponseEntity<Employee> saveEmployee(@Valid @RequestBody Employee employee) {
-		return new ResponseEntity<>(eService.saveEmployee(employee), HttpStatus.CREATED);
+	public Employee saveEmployee(@Valid @RequestBody Employee employee) {
+		return eRepo.save(employee);
 	}
 
 	// One to One Relationship
-	@PostMapping("/employees")
-	public ResponseEntity<Employee> saveEmployeeWithRequest(@Valid @RequestBody EmployeeRequest eRequest) {
-		Department dept = new Department();
-		dept.setName(eRequest.getDepartments());
-
-		dept = dRepo.save(dept);
-
-		Employee employee = new Employee(eRequest);
-		employee.setDepartments(dept);
-
-		employee = eRepo.save(employee);
-		return new ResponseEntity<Employee>(employee, HttpStatus.CREATED);
-	}
+//	@PostMapping("/employees")
+//	public ResponseEntity<Employee> saveEmployeeWithRequest(@Valid @RequestBody EmployeeRequest eRequest) {
+//		Department dept = new Department();
+//		dept.setName(eRequest.getDepartment());
+//
+//		dept = dRepo.save(dept);
+//
+//		Employee employee = new Employee(eRequest);
+//		employee.setDepartment(dept);
+//
+//		employee = eRepo.save(employee);
+//		return new ResponseEntity<Employee>(employee, HttpStatus.CREATED);
+//	}
 
 	// One to Many Relationship
 //   @PostMapping("/employees")
@@ -159,14 +178,15 @@ public class EmployeeController {
 		return new ResponseEntity<Employee>(eService.updateEmployee(employee), HttpStatus.OK);
 	}
 
-	@DeleteMapping("/employees")
-	public ResponseEntity<HttpStatus> deleteEmployee(@RequestParam Long id) {
+	@DeleteMapping("/employees/{id}")
+	public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable Long id) {	
 		return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
 	}
 
 	@GetMapping("/employees/filterByName/{name}")
-	public ResponseEntity<List<Employee>> getEmployeesByName(@RequestParam String name) {
-		return new ResponseEntity<List<Employee>>(eService.getEmployeesByName(name), HttpStatus.OK);
+	public ResponseEntity<List<Employee>> getEmployeesByDepartment(@RequestParam String name) {
+//		return new ResponseEntity<List<Employee>>(eRepo.findByDepartmentName(name), HttpStatus.OK);
+		return new ResponseEntity<List<Employee>>(eRepo.getEmployeesByDeptName(name), HttpStatus.OK);
 	}
 
 	@GetMapping("/employees/filterByNameAndLocation")
@@ -187,22 +207,22 @@ public class EmployeeController {
 		return new ResponseEntity<List<Employee>>(eService.getEmployeesByNameOrLocation(name, location), HttpStatus.OK);
 	}
 
-	@GetMapping("/employees/delete/{name}")
+	@DeleteMapping("/employees/delete/{name}")
 	public ResponseEntity<String> deleteEmployeeByName(@PathVariable String name) {
-		return new ResponseEntity<String>(eService.deleteEmployeeByName(name) + "No. of records deleted",
+		return new ResponseEntity<String>(eService.deleteEmployeeByName(name) + " No. of records deleted",
 				HttpStatus.OK);
 	}
 
-	@GetMapping("/employees/filter/{id}")
-	public ResponseEntity<List<Employee>> getEmployeesByDeptId(@RequestParam Long id) throws MethodArgumentTypeMismatchException {
+	@GetMapping("/employees/filter/{departmentId}")
+	public ResponseEntity<List<Employee>> getEmployeesByDeptId(@PathVariable Long departmentId) throws MethodArgumentTypeMismatchException {
 //	   return new ResponseEntity<List<Employee>>(eRepo.findByDepartmentName(name), HttpStatus.OK);	
-		return new ResponseEntity<List<Employee>>(eRepo.getEmployeesByDeptId(id), HttpStatus.OK);
+		return new ResponseEntity<List<Employee>>(eRepo.getEmployeesByDptId(departmentId), HttpStatus.OK);
 	}
 
 	@GetMapping("/employees/all")
 	public List<Employee> getEmployees() {
-//	   return eRepo.getEmployees();	
+	   return eRepo.getEmployees();	
 //	   return eDAO.getAll();
-		return eRepo.getAllRecords();
+//		return eRepo.getAllRecords();
 	}
 }

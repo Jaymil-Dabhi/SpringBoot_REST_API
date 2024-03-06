@@ -37,19 +37,19 @@ import lombok.ToString;
 @NamedQuery(name="Employee.getAllRecords", query="FROM Employee")
 public class Employee {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
 	
    @NotBlank(message= "Name should not be null")
    private String name;
    
-//   @OneToOne
-//   @JoinColumn(name="department_id")
-//   private @NotBlank(message = "department should not be null") String department;
+   @ManyToOne
+   @JoinColumn(name = "department_id")
+   private Department department;
    
-   @OneToMany(mappedBy = "employee")
-   private List<Department> departments;
+//   @OneToMany(mappedBy = "employee")
+//   private List<Department> departments;
    
    private Long age = 0L;
    
@@ -62,7 +62,7 @@ public class Employee {
    
    @NotBlank(message= "department should not be null")
    @Column(name = "department")
-   private String department;
+   private String departmentName;
    
    @CreatationTimestamp
    @Column(name="created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -72,29 +72,31 @@ public class Employee {
    @Column(name="updated_at")
    private LocalDateTime updatedAt;
    
+public Employee() {
+	   
+   }
+   
    public Employee(EmployeeRequest req) {
 	   this.name = req.getName();
    }
    
-   public Employee() {
-	   
-   }
+   
 
-
-
-public Employee(Long id, @NotBlank(message = "Name should not be null") String name,
-		@NotBlank(message = "department should not be null") String department, List<Department> departments, Long age,
-		String location, String password, @Email(message = "Please enter the valid email address") String email,
-		LocalDateTime createdAt, LocalDateTime updatedAt) {
+public Employee(String id, @NotBlank(message = "Name should not be null") String name, Department department,
+		List<Department> departments, Long age, String location, String password,
+		@Email(message = "Please enter the valid email address") String email,
+		@NotBlank(message = "department should not be null") String departmentName, LocalDateTime createdAt,
+		LocalDateTime updatedAt) {
 	super();
-	this.id = id;
+	this.id = Long.parseLong(id);
 	this.name = name;
 	this.department = department;
-	this.departments = departments;
+//	this.departments = departments;
 	this.age = age;
 	this.location = location;
 	this.password = password;
 	this.email = email;
+	this.departmentName = departmentName;
 	this.createdAt = createdAt;
 	this.updatedAt = updatedAt;
 }
@@ -115,21 +117,21 @@ public void setName(String name) {
 	this.name = name;
 }
 
-//public Department getDepartment() {
-//	return department;
+public Department getDepartmentId() {
+	return department;
+}
+
+public void setDepartmentId(Department departmentId) {
+	this.department = department;
+}
+
+//public List<Department> getDepartments() {
+//	return departments;
 //}
 //
-//public void setDepartment(Department department) {
-//	this.department = department;
+//public void setDepartments(List<Department> departments) {
+//	this.departments = departments;
 //}
-
-public List<Department> getDepartments() {
-	return departments;
-}
-
-public void setDepartments(Department dept) {
-	this.departments = (List<Department>) dept;
-}
 
 public Long getAge() {
 	return age;
@@ -147,6 +149,14 @@ public void setLocation(String location) {
 	this.location = location;
 }
 
+public String getPassword() {
+	return password;
+}
+
+public void setPassword(String password) {
+	this.password = password;
+}
+
 public String getEmail() {
 	return email;
 }
@@ -155,12 +165,12 @@ public void setEmail(String email) {
 	this.email = email;
 }
 
-public String getDepartment() {
-	return department;
+public String getDepartmentName() {
+	return departmentName;
 }
 
-public void setDepartment(String department) {
-	this.department = department;
+public void setDepartmentName(String departmentName) {
+	this.departmentName = departmentName;
 }
 
 public LocalDateTime getCreatedAt() {
@@ -179,17 +189,7 @@ public void setUpdatedAt(LocalDateTime updatedAt) {
 	this.updatedAt = updatedAt;
 }
 
-public String getPassword() {
-	return password;
-}
-
-public void setPassword(String password) {
-	this.password = password;
-}
 
 
-
-
-   
    
 }

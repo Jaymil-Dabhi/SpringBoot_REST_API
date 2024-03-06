@@ -14,9 +14,9 @@ public interface EmployeeService {
 	
 	Employee getSingleEmployee (Long id);
 	
-	Employee getEmployeeByDptId(Long id);
+	List<Employee> getEmployeesByDptId(Long departmentId);
 	
-	Object deleteEmployee(Long id);
+	void deleteEmployee(Long id);
 	
 //	Employee findByName(String name);
 	

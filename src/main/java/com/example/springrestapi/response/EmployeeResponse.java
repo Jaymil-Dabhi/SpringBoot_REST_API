@@ -1,12 +1,19 @@
 package com.example.springrestapi.response;
 
-public class DepartmentResponse {
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+public class EmployeeResponse {
 
 	private Long id;
 	
-	private String departmentName;
-	
 	private String employeeName;
+	
+	private List<String> department;
 
 	public Long getId() {
 		return id;
@@ -16,20 +23,20 @@ public class DepartmentResponse {
 		this.id = id;
 	}
 
-	public String getDepartmentName() {
-		return departmentName;
-	}
-
-	public void setDepartmentName(String departmentName) {
-		this.departmentName = departmentName;
-	}
-
 	public String getEmployeeName() {
 		return employeeName;
 	}
 
 	public void setEmployeeName(String employeeName) {
 		this.employeeName = employeeName;
+	}
+
+	public List<String> getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(List<String> department) {
+		this.department = department;
 	}
 	
 	

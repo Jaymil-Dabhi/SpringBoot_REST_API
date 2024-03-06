@@ -14,18 +14,21 @@ public class EmployeeRequest {
 	
 	private List<String> department;
 
-	public @NotBlank(message = "Name should not be null") String getName() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getName() {
+		return name;
 	}
 
-	public Object getDepartment() {
-		// TODO Auto-generated method stub
-		return null;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getDepartments() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getDepartment() {
+		return department;
 	}
+
+	public void setDepartment(List<String> department) {
+		this.department = department;
+	}
+
+	
 }
