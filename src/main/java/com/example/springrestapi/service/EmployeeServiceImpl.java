@@ -71,10 +71,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return eRepository.save(employee);
 	}
 
-	@Override
-	public List<Employee> getEmployeesByName(String name) {
-		return eRepository.findByName(name);
-	}
+//	@Override
+//	public List<Employee> getEmployeesByName(String name) {
+//		return eRepository.findByName(name);
+//	}
 	
 	@Override
 	public List<Employee> getEmployeesByNameAndLocation(String name, String location){
@@ -92,15 +92,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     	return eRepository.getEmployeesByNameOrLocation(name, location);
     }
     
-    @Override
-    public Integer deleteEmployeeName(String name) {
-    	return eRepository.deleteEmployeeByName(name);
-    }
+//    @Override
+//    public Integer deleteEmployeeName(String name) {
+//    	return eRepository.deleteEmployeeByName(name);
+//    }
 
 	@Override
 	public Integer deleteEmployeeByName(String name) {
 		// TODO Auto-generated method stub
-		return null;
+		return eRepository.deleteEmployeeByName(name);
 	}
 
 	@Override

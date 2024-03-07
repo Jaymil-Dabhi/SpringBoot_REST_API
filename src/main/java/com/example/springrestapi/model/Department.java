@@ -3,6 +3,7 @@ package com.example.springrestapi.model;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,7 +41,7 @@ public class Department {
    @JoinColumn(name = "employee_id")
    private Employee employee;
    
-   @OneToMany(mappedBy = "department")
+   @OneToMany(fetch = FetchType.EAGER, mappedBy = "department")
    private List<Employee> employees;
    
   public Department() {

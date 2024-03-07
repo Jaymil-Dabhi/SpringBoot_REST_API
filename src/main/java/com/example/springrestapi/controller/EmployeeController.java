@@ -12,6 +12,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.example.springrestapi.config.JwtProvider;
 import com.example.springrestapi.dao.EmployeeDAOImplementation;
 import com.example.springrestapi.exception.EmployeeException;
+import com.example.springrestapi.exception.EmployeeNotFoundException;
 import com.example.springrestapi.model.Department;
 import com.example.springrestapi.model.Employee;
 import com.example.springrestapi.repository.DepartmentRepository;
@@ -37,6 +39,8 @@ import com.example.springrestapi.service.EmployeeService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @RestController
@@ -53,8 +57,8 @@ public class EmployeeController {
 	@Autowired
 	private JwtProvider jwtProvider;
 
-	@Autowired
-	private EmployeeDAOImplementation eDAO;
+//	@Autowired
+//	private EmployeeDAOImplementation eDAO;
 
 	@Autowired
 	private DepartmentRepository dRepo;
@@ -126,9 +130,15 @@ public class EmployeeController {
 //		return new ResponseEntity<List<EmployeeResponse>>(responseList, HttpStatus.OK);
 //	}
 
+	@ExceptionHandler(EmployeeNotFoundException.class)
 	@GetMapping("/employees/{id}")
-	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-		return new ResponseEntity<Employee>(eService.getSingleEmployee(id), HttpStatus.OK);
+	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) throws EmployeeException {
+		try {
+	        Employee employee = eService.getSingleEmployee(id);
+	        return new ResponseEntity<>(employee, HttpStatus.OK);
+	    } catch (EntityNotFoundException ex) {
+	        throw new EmployeeNotFoundException(id);
+	    }
 	}
 
 	@PostMapping("/employees/save")
@@ -183,6 +193,7 @@ public class EmployeeController {
 		return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
 	}
 
+	@Transactional
 	@GetMapping("/employees/filterByName/{name}")
 	public ResponseEntity<List<Employee>> getEmployeesByDepartment(@RequestParam String name) {
 //		return new ResponseEntity<List<Employee>>(eRepo.findByDepartmentName(name), HttpStatus.OK);
@@ -219,10 +230,10 @@ public class EmployeeController {
 		return new ResponseEntity<List<Employee>>(eRepo.getEmployeesByDptId(departmentId), HttpStatus.OK);
 	}
 
-	@GetMapping("/employees/all")
-	public List<Employee> getEmployees() {
-	   return eRepo.getEmployees();	
+//	@GetMapping("/employees/all")
+//	public List<Employee> getEmployees() {
+//	   return eRepo.getEmployees();	
 //	   return eDAO.getAll();
 //		return eRepo.getAllRecords();
-	}
+//	}
 }

@@ -39,7 +39,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
      List<Employee> getEmployeesByNameOrLocation(@Param("name") String name, @Param("location") String location);
      
     // @Query(value = "select * from tbl_employee" nativeQuery = true)
-     List<Employee> getEmployees();
+//     List<Employee> getEmployees();
      
      List<Employee> getAllRecords();
      

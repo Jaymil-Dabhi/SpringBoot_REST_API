@@ -117,11 +117,11 @@ public void setName(String name) {
 	this.name = name;
 }
 
-public Department getDepartmentId() {
+public Department getDepartment() {
 	return department;
 }
 
-public void setDepartmentId(Department departmentId) {
+public void setDepartment(Department department) {
 	this.department = department;
 }
 

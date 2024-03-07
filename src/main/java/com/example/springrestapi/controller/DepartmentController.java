@@ -2,6 +2,8 @@ package com.example.springrestapi.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,20 +36,35 @@ public class DepartmentController {
 	@Autowired
 	private DepartmentRepository dRepo;
 	
-	@Autowired(required=true)
-	private DepartmentDAOImplementation eDAO;
+//	@Autowired(required=true)
+//	private DepartmentDAOImplementation eDAO;
 	
 	@Autowired
 	private EmployeeRepository eRepo;
 	
 	@PostMapping("/department/create")
-	public ResponseEntity<Department> createDepartment(@RequestBody Department department){
-		String name = department.getName();
-		List<Employee> employee = department.getEmployees();
+	public ResponseEntity<Department> createDepartment(@RequestBody DepartmentRequest departmentRequest){
+		String name = departmentRequest.getName();
+		Long employeeId = departmentRequest.getEmployeeId();
 		
-		Department saveDepartment = dRepo.save(department);
-		
-		return new ResponseEntity<Department>(dService.createDepartment(department),HttpStatus.CREATED);
+		Optional<Employee> employeeOptional = eRepo.findById(employeeId);
+
+	    if (employeeOptional.isPresent()) {
+	        Employee emp = employeeOptional.get();
+
+	        // Create a new department and assign the employee
+	        DepartmentRequest department = new DepartmentRequest();
+	        department.setName(name);
+	        department.setEmployeeId(employeeId);
+
+	        // Save the department
+	        Department savedDepartment = dRepo.save(department);
+
+	        return new ResponseEntity<>(savedDepartment, HttpStatus.CREATED);
+	    } else {
+	        // If the employee with the provided ID is not found
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
 	}
 	
 	@GetMapping("/departments")
@@ -55,11 +72,17 @@ public class DepartmentController {
 		List<Department> depts = dRepo.findAll();
 		List<DepartmentResponse> list = new ArrayList<>();
 		depts.forEach(d -> {
-			DepartmentResponse dResponse = new DepartmentResponse();
-			dResponse.setDepartmentName(d.getName());
-			dResponse.setId(d.getId());
-			dResponse.setEmployeeName(((Department) d.getEmployees()).getName());
-			list.add(dResponse);
+		    DepartmentResponse dResponse = new DepartmentResponse();
+		    dResponse.setDepartmentName(d.getName());
+		    dResponse.setId(d.getId());
+
+		    // Example: Assuming you want to concatenate employee names in a single string
+		    String employeeNames = d.getEmployees().stream()
+		                                .map(Employee::getName)
+		                                .collect(Collectors.joining(", "));
+
+		    dResponse.setEmployeeName(employeeNames);
+		    list.add(dResponse);
 		});
 		return list;
 	}
@@ -70,8 +93,14 @@ public class DepartmentController {
 //		return new ResponseEntity<List<Department>>(dService.getDepartments(), HttpStatus.OK);
 //	}
 	
+	@GetMapping("/departments/{id}")
 	public ResponseEntity<Department>getDepartmentById(@PathVariable Long id){
-		return new ResponseEntity<Department>(HttpStatus.OK);
+		Department department = dRepo.findById(id).orElse(null);
+	    if (department != null) {
+	        return new ResponseEntity<>(department, HttpStatus.OK);
+	    } else {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
 	}
 	
 	

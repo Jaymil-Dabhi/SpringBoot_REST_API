@@ -22,7 +22,7 @@ public interface EmployeeService {
 	
 	Employee updateEmployee(Employee employee);
 	
-	List<Employee> getEmployeesByName(String name);
+//	List<Employee> getEmployeesByName(String name);
 	
 	List<Employee> getEmployeesByNameAndLocation(String name, String location);
 	
@@ -32,7 +32,7 @@ public interface EmployeeService {
 	
 	Integer deleteEmployeeByName(String name);
 
-	Integer deleteEmployeeName(String name);
+//	Integer deleteEmployeeName(String name);
 	
 	
 }
